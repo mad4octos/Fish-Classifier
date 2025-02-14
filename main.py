@@ -10,6 +10,8 @@ from torchvision import transforms
 from classifier import BinaryClassificationCNN  # Your classifier module
 from underwater_enhancement import LACE, LACC
 
+# Testing github
+
 # Load models
 sam2_checkpoint = "D:/Work-Related/fiverr/MIKE-GUI2/tracking_module/sam2.1_hiera_tiny.pt"
 model_cfg = "D:/Work-Related/fiverr/MIKE-GUI2/tracking_module/sam2.1_hiera_t.yaml"
