@@ -40,6 +40,10 @@ frame_names = sorted(
     key=lambda p: int(os.path.splitext(p)[0])
 )
 
+# Initializing model 
+init = predictor.init_state(video_path=video_dir)
+print("Predictor state initialized")
+
 
 # Tracking variables
 tracking_initialized = False
@@ -109,7 +113,7 @@ def calculate_iou(boxA, boxB):
     return iou
 
 def merge_new_detections(new_detections):
-    global next_obj_id
+    global next_obj_id, init
 
     for new_box, new_cls, new_conf in new_detections:
         # Check if this new detection overlaps with an existing object
@@ -122,7 +126,7 @@ def merge_new_detections(new_detections):
 
         if is_new_object:
             # Add the new object
-            object_states[next_obj_id] = predictor.init_state(video_path=video_dir)
+            object_states[next_obj_id] = init 
             tracked_objects[next_obj_id] = {
                 'box': new_box,
                 'class': new_cls,
@@ -134,7 +138,7 @@ def merge_new_detections(new_detections):
 
 def initialize_tracking(frame):
     """Initialize tracking using YOLOv8 detections and classification"""
-    global tracking_initialized, next_obj_id, tracked_objects, object_states
+    global tracking_initialized, next_obj_id, tracked_objects, object_states, init
 
     # Enhance the frame
     beta = 1.5
@@ -160,7 +164,7 @@ def initialize_tracking(frame):
             # Only process if classification passes
             if classify_detection(frame, box):
                 # Initialize SAM state for this object
-                object_states[next_obj_id] = predictor.init_state(video_path=video_dir)
+                object_states[next_obj_id] = init
 
                 # Create new tracking entry
                 tracked_objects[next_obj_id] = {
@@ -174,7 +178,6 @@ def initialize_tracking(frame):
     if tracked_objects:
         tracking_initialized = True
         print(f"Initialized tracking for {len(tracked_objects)} objects")
-
 
 def process_frame(frame_idx):
     global tracking_initialized, tracked_objects, object_states, next_obj_id
