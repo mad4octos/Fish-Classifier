@@ -10,17 +10,16 @@ from torchvision import transforms
 from classifier import BinaryClassificationCNN  # Your classifier module
 from underwater_enhancement import LACE, LACC
 
-# Testing github
 
 # Load models
-sam2_checkpoint = "D:/Work-Related/fiverr/MIKE-GUI2/tracking_module/sam2.1_hiera_tiny.pt"
-model_cfg = "D:/Work-Related/fiverr/MIKE-GUI2/tracking_module/sam2.1_hiera_t.yaml"
-yolo_model = YOLO('yolov8s.pt')
+sam2_checkpoint = "/projects/maha7624/software/sam2/checkpoints/sam2.1_hiera_large.pt"
+model_cfg = "configs/sam2.1/sam2.1_hiera_l.yaml"
+yolo_model = YOLO('/scratch/alpine/maha7624/classifier/deliver/yolov8s.pt')
 
 # Load and setup classifier
 class_model = BinaryClassificationCNN()
 class_model.load_state_dict(torch.load(
-    "D:/Work-Related/fiverr/MIKE-GUI2/classification/output_crops/output_crops/saved_model/model_weights.pth"))
+    "/scratch/alpine/maha7624/classifier/deliver/model_weights.pth"))
 class_model.eval()
 
 # Preprocessing function for the classifier
@@ -35,11 +34,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 predictor = build_sam2_video_predictor(model_cfg, sam2_checkpoint, device=device)
 
 # Initialize inference state
-video_dir = "D:/Work-Related/fiverr/MIKE-GUI2/tracking_module/video1"
+video_dir = "/scratch/alpine/maha7624/classifier/deliver/sub"
 frame_names = sorted(
     [p for p in os.listdir(video_dir) if os.path.splitext(p)[-1].lower() in [".jpg", ".jpeg"]],
     key=lambda p: int(os.path.splitext(p)[0])
 )
+
 
 # Tracking variables
 tracking_initialized = False
@@ -281,7 +281,7 @@ def process_frame(frame_idx):
 
 
 # Setup window
-cv2.namedWindow("SAM Multi-Object Tracking")
+#cv2.namedWindow("SAM Multi-Object Tracking")
 
 # Main loop
 frame_idx = 0
@@ -299,23 +299,23 @@ while frame_idx < total_frames:
     if not paused:
         frame = process_frame(frame_idx)
 
-        if frame is not None:
+        #if frame is not None:
             # Convert to BGR for display
-            frame_display = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            cv2.imshow("SAM Multi-Object Tracking", frame_display)
+           # frame_display = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            #cv2.imshow("SAM Multi-Object Tracking", frame_display)
 
         # Advance frame
         frame_idx += 1
 
     # Handle keyboard input
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord('q'):  # Quit
-        break
-    elif key == ord('r'):  # Reset tracking
-        tracking_initialized = False
-        next_obj_id = 1
-    elif key == ord(' '):  # Space to pause/resume
-        paused = not paused
+    #key = cv2.waitKey(1) & 0xFF
+    #if key == ord('q'):  # Quit
+    #    break
+    #elif key == ord('r'):  # Reset tracking
+    #    tracking_initialized = False
+    #    next_obj_id = 1
+    #elif key == ord(' '):  # Space to pause/resume
+    #    paused = not paused
 
     # Control frame rate
     elapsed = time.time() - current_time
@@ -323,4 +323,4 @@ while frame_idx < total_frames:
         time.sleep(frame_delay - elapsed)
 
 print("\nVideo processing completed!")
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
